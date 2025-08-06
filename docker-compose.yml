@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - product-service
+    environment:
+      - PORT=8080
+      - SERVICE_NAME=api-gateway
+    networks:
+      - microservice-network
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - SERVICE_NAME=user-service
+    networks:
+      - microservice-network
+
+  product-service:
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+      - SERVICE_NAME=product-service
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    driver: bridge
