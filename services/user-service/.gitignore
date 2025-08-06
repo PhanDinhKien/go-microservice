@@ -1,0 +1,80 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build artifacts
+/bin/
+/dist/
+/build/
+
+# Temporary files
+/tmp/
+*.tmp
+
+# Coverage reports
+coverage.txt
+coverage.html
+coverage.out
+
+# Air live reload tool
+/tmp/
+
+# Note: Ent generated code is committed for stability
+# If you prefer to generate on CI/CD, uncomment below:
+# ent/client.go
+# ent/ent.go
+# ent/tx.go
+# ent/mutation.go
+# ent/predicate.go
+# ent/runtime.go
+# ent/user.go
+# ent/user_*.go
+# ent/migrate/
+# ent/hook/
+# ent/enttest/
+# ent/runtime/
