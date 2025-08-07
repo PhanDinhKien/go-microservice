@@ -22,13 +22,16 @@ type ServerConfig struct {
 
 // DatabaseConfig holds database configuration
 type DatabaseConfig struct {
-	Driver   string
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
+	Driver                string
+	Host                  string
+	Port                  string
+	User                  string
+	Password              string
+	DBName                string
+	SSLMode               string
+	MaxOpenConnections    int
+	MaxIdleConnections    int
+	ConnectionMaxLifetime string
 }
 
 // LoggerConfig holds logger configuration
@@ -47,13 +50,16 @@ func LoadConfig() *Config {
 			WriteTimeout: getEnvAsInt("WRITE_TIMEOUT", 30),
 		},
 		Database: DatabaseConfig{
-			Driver:   getEnv("DB_DRIVER", "sqlite"),
-			Host:     getEnv("DB_HOST", "localhost"),
-			Port:     getEnv("DB_PORT", "5432"),
-			User:     getEnv("DB_USER", "postgres"),
-			Password: getEnv("DB_PASSWORD", ""),
-			DBName:   getEnv("DB_NAME", "user_service.db"),
-			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+			Driver:                getEnv("DB_DRIVER", "sqlite"),
+			Host:                  getEnv("DB_HOST", "localhost"),
+			Port:                  getEnv("DB_PORT", "5432"),
+			User:                  getEnv("DB_USER", "postgres"),
+			Password:              getEnv("DB_PASSWORD", ""),
+			DBName:                getEnv("DB_NAME", "user_service.db"),
+			SSLMode:               getEnv("DB_SSLMODE", "disable"),
+			MaxOpenConnections:    getEnvAsInt("DB_MAX_OPEN_CONNECTIONS", 25),
+			MaxIdleConnections:    getEnvAsInt("DB_MAX_IDLE_CONNECTIONS", 10),
+			ConnectionMaxLifetime: getEnv("DB_CONNECTION_MAX_LIFETIME", "5m"),
 		},
 		Logger: LoggerConfig{
 			Level:  getEnv("LOG_LEVEL", "info"),

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"app-microservice/services/user-service/ent"
 	"app-microservice/services/user-service/ent/user"
@@ -18,13 +19,16 @@ import (
 
 // Config holds database configuration
 type Config struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
-	Driver   string // postgres, sqlite
+	Host                  string
+	Port                  string
+	User                  string
+	Password              string
+	DBName                string
+	SSLMode               string
+	Driver                string // postgres, sqlite
+	MaxOpenConnections    int
+	MaxIdleConnections    int
+	ConnectionMaxLifetime string
 }
 
 // NewConnection creates a new Ent client connection
@@ -39,6 +43,15 @@ func NewConnection(config *Config) (*ent.Client, error) {
 		db, err := sql.Open("pgx", dsn)
 		if err != nil {
 			return nil, fmt.Errorf("failed to open postgres connection: %w", err)
+		}
+
+		// Configure connection pool
+		db.SetMaxOpenConns(config.MaxOpenConnections)
+		db.SetMaxIdleConns(config.MaxIdleConnections)
+
+		// Parse connection max lifetime
+		if duration, err := time.ParseDuration(config.ConnectionMaxLifetime); err == nil {
+			db.SetConnMaxLifetime(duration)
 		}
 
 		// Test connection
