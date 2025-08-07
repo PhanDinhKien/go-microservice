@@ -1,8 +1,11 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 // Config holds all configuration for the application
@@ -42,6 +45,11 @@ type LoggerConfig struct {
 
 // LoadConfig loads configuration from environment variables
 func LoadConfig() *Config {
+	// Try to load .env file (ignore if not found)
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: Could not load .env file: %v", err)
+	}
+
 	return &Config{
 		Server: ServerConfig{
 			Port:         getEnv("PORT", "8081"),

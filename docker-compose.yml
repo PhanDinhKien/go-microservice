@@ -28,12 +28,16 @@ services:
     environment:
       - PORT=8081
       - SERVICE_NAME=user-service
+      - DB_DRIVER=postgres
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=postgres123
       - DB_NAME=microservice_db
       - DB_SSLMODE=disable
+      - DB_MAX_OPEN_CONNECTIONS=25
+      - DB_MAX_IDLE_CONNECTIONS=10
+      - DB_CONNECTION_MAX_LIFETIME=5m
     volumes:
       - ./services/user-service/.env:/app/.env
     networks:
@@ -63,7 +67,6 @@ services:
       - POSTGRES_PASSWORD=postgres123
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - microservice-network
     healthcheck:
