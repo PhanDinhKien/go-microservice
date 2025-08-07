@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,8 @@ COPY shared/ ./shared/
 COPY services/user-service/ ./services/user-service/
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o user-service ./services/user-service
+WORKDIR /app/services/user-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o user-service ./cmd/server
 
 # Final stage
 FROM alpine:latest
@@ -23,7 +24,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # Copy the binary from builder stage
-COPY --from=builder /app/user-service .
+COPY --from=builder /app/services/user-service/user-service .
 
 # Expose port
 EXPOSE 8081

@@ -1,9 +1,9 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-# Copy go mod files
+# Copy go mod files from root
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -14,7 +14,8 @@ COPY shared/ ./shared/
 COPY services/product-service/ ./services/product-service/
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o product-service ./services/product-service
+WORKDIR /app/services/product-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o product-service .
 
 # Final stage
 FROM alpine:latest
@@ -23,7 +24,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # Copy the binary from builder stage
-COPY --from=builder /app/product-service .
+COPY --from=builder /app/services/product-service/product-service .
 
 # Expose port
 EXPOSE 8082
