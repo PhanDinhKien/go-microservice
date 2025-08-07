@@ -8,6 +8,66 @@ import (
 )
 
 var (
+	// StudentsColumns holds the columns for the "students" table.
+	StudentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "student_code", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "date_of_birth", Type: field.TypeTime},
+		{Name: "address", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+	}
+	// StudentsTable holds the schema information for the "students" table.
+	StudentsTable = &schema.Table{
+		Name:       "students",
+		Columns:    StudentsColumns,
+		PrimaryKey: []*schema.Column{StudentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "students_users_students",
+				Columns:    []*schema.Column{StudentsColumns[10]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "student_student_code",
+				Unique:  true,
+				Columns: []*schema.Column{StudentsColumns[1]},
+			},
+			{
+				Name:    "student_email",
+				Unique:  true,
+				Columns: []*schema.Column{StudentsColumns[3]},
+			},
+			{
+				Name:    "student_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{StudentsColumns[10]},
+			},
+			{
+				Name:    "student_phone",
+				Unique:  false,
+				Columns: []*schema.Column{StudentsColumns[4]},
+			},
+			{
+				Name:    "student_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StudentsColumns[7]},
+			},
+			{
+				Name:    "student_user_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StudentsColumns[10], StudentsColumns[7]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -43,9 +103,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		StudentsTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	StudentsTable.ForeignKeys[0].RefTable = UsersTable
 }

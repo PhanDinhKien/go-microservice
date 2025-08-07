@@ -4,6 +4,7 @@ package ent
 
 import (
 	"app-microservice/services/user-service/ent/predicate"
+	"app-microservice/services/user-service/ent/student"
 	"app-microservice/services/user-service/ent/user"
 	"context"
 	"errors"
@@ -96,9 +97,45 @@ func (_u *UserUpdate) SetUpdatedAt(v time.Time) *UserUpdate {
 	return _u
 }
 
+// AddStudentIDs adds the "students" edge to the Student entity by IDs.
+func (_u *UserUpdate) AddStudentIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddStudentIDs(ids...)
+	return _u
+}
+
+// AddStudents adds the "students" edges to the Student entity.
+func (_u *UserUpdate) AddStudents(v ...*Student) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddStudentIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearStudents clears all "students" edges to the Student entity.
+func (_u *UserUpdate) ClearStudents() *UserUpdate {
+	_u.mutation.ClearStudents()
+	return _u
+}
+
+// RemoveStudentIDs removes the "students" edge to Student entities by IDs.
+func (_u *UserUpdate) RemoveStudentIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveStudentIDs(ids...)
+	return _u
+}
+
+// RemoveStudents removes "students" edges to Student entities.
+func (_u *UserUpdate) RemoveStudents(v ...*Student) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveStudentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -192,6 +229,51 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.StudentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedStudentsIDs(); len(nodes) > 0 && !_u.mutation.StudentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.StudentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -280,9 +362,45 @@ func (_u *UserUpdateOne) SetUpdatedAt(v time.Time) *UserUpdateOne {
 	return _u
 }
 
+// AddStudentIDs adds the "students" edge to the Student entity by IDs.
+func (_u *UserUpdateOne) AddStudentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddStudentIDs(ids...)
+	return _u
+}
+
+// AddStudents adds the "students" edges to the Student entity.
+func (_u *UserUpdateOne) AddStudents(v ...*Student) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddStudentIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearStudents clears all "students" edges to the Student entity.
+func (_u *UserUpdateOne) ClearStudents() *UserUpdateOne {
+	_u.mutation.ClearStudents()
+	return _u
+}
+
+// RemoveStudentIDs removes the "students" edge to Student entities by IDs.
+func (_u *UserUpdateOne) RemoveStudentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveStudentIDs(ids...)
+	return _u
+}
+
+// RemoveStudents removes "students" edges to Student entities.
+func (_u *UserUpdateOne) RemoveStudents(v ...*Student) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveStudentIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -405,6 +523,51 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if _u.mutation.StudentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedStudentsIDs(); len(nodes) > 0 && !_u.mutation.StudentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.StudentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: _u.config}
 	_spec.Assign = _node.assignValues

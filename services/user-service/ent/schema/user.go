@@ -1,10 +1,12 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"time"
 )
 
 // User holds the schema definition for the User entity.
@@ -46,7 +48,9 @@ func (User) Fields() []ent.Field {
 
 // Edges of the User.
 func (User) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("students", Student.Type).Comment("danh sach hoc sinh cua user"),
+	}
 }
 
 // Indexes of the User.

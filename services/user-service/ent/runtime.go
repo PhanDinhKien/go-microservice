@@ -4,6 +4,7 @@ package ent
 
 import (
 	"app-microservice/services/user-service/ent/schema"
+	"app-microservice/services/user-service/ent/student"
 	"app-microservice/services/user-service/ent/user"
 	"time"
 )
@@ -12,6 +13,38 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	studentFields := schema.Student{}.Fields()
+	_ = studentFields
+	// studentDescStudentCode is the schema descriptor for student_code field.
+	studentDescStudentCode := studentFields[0].Descriptor()
+	// student.StudentCodeValidator is a validator for the "student_code" field. It is called by the builders before save.
+	student.StudentCodeValidator = studentDescStudentCode.Validators[0].(func(string) error)
+	// studentDescName is the schema descriptor for name field.
+	studentDescName := studentFields[1].Descriptor()
+	// student.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	student.NameValidator = studentDescName.Validators[0].(func(string) error)
+	// studentDescEmail is the schema descriptor for email field.
+	studentDescEmail := studentFields[2].Descriptor()
+	// student.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	student.EmailValidator = studentDescEmail.Validators[0].(func(string) error)
+	// studentDescPhone is the schema descriptor for phone field.
+	studentDescPhone := studentFields[3].Descriptor()
+	// student.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	student.PhoneValidator = studentDescPhone.Validators[0].(func(string) error)
+	// studentDescAddress is the schema descriptor for address field.
+	studentDescAddress := studentFields[5].Descriptor()
+	// student.AddressValidator is a validator for the "address" field. It is called by the builders before save.
+	student.AddressValidator = studentDescAddress.Validators[0].(func(string) error)
+	// studentDescCreatedAt is the schema descriptor for created_at field.
+	studentDescCreatedAt := studentFields[6].Descriptor()
+	// student.DefaultCreatedAt holds the default value on creation for the created_at field.
+	student.DefaultCreatedAt = studentDescCreatedAt.Default.(func() time.Time)
+	// studentDescUpdatedAt is the schema descriptor for updated_at field.
+	studentDescUpdatedAt := studentFields[7].Descriptor()
+	// student.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	student.DefaultUpdatedAt = studentDescUpdatedAt.Default.(func() time.Time)
+	// student.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	student.UpdateDefaultUpdatedAt = studentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

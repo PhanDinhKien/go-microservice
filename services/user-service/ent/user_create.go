@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"app-microservice/services/user-service/ent/student"
 	"app-microservice/services/user-service/ent/user"
 	"context"
 	"errors"
@@ -86,6 +87,21 @@ func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
 		_c.SetUpdatedAt(*v)
 	}
 	return _c
+}
+
+// AddStudentIDs adds the "students" edge to the Student entity by IDs.
+func (_c *UserCreate) AddStudentIDs(ids ...int) *UserCreate {
+	_c.mutation.AddStudentIDs(ids...)
+	return _c
+}
+
+// AddStudents adds the "students" edges to the Student entity.
+func (_c *UserCreate) AddStudents(v ...*Student) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddStudentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -223,6 +239,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := _c.mutation.StudentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StudentsTable,
+			Columns: []string{user.StudentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
