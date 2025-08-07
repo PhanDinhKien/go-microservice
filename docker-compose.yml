@@ -22,9 +22,20 @@ services:
       dockerfile: services/user-service/Dockerfile
     ports:
       - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       - PORT=8081
       - SERVICE_NAME=user-service
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres123
+      - DB_NAME=microservice_db
+      - DB_SSLMODE=disable
+    volumes:
+      - ./services/user-service/.env:/app/.env
     networks:
       - microservice-network
 
@@ -39,6 +50,30 @@ services:
       - SERVICE_NAME=product-service
     networks:
       - microservice-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=microservice_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data:
 
 networks:
   microservice-network:

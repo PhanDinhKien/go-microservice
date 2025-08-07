@@ -53,13 +53,16 @@ func main() {
 
 	// Initialize database
 	dbConfig := &database.Config{
-		Host:     cfg.Database.Host,
-		Port:     cfg.Database.Port,
-		User:     cfg.Database.User,
-		Password: cfg.Database.Password,
-		DBName:   cfg.Database.DBName,
-		SSLMode:  cfg.Database.SSLMode,
-		Driver:   cfg.Database.Driver,
+		Host:                  cfg.Database.Host,
+		Port:                  cfg.Database.Port,
+		User:                  cfg.Database.User,
+		Password:              cfg.Database.Password,
+		DBName:                cfg.Database.DBName,
+		SSLMode:               cfg.Database.SSLMode,
+		Driver:                cfg.Database.Driver,
+		MaxOpenConnections:    cfg.Database.MaxOpenConnections,
+		MaxIdleConnections:    cfg.Database.MaxIdleConnections,
+		ConnectionMaxLifetime: cfg.Database.ConnectionMaxLifetime,
 	}
 
 	entClient, err := database.NewConnection(dbConfig)
