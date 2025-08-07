@@ -17,6 +17,16 @@ import (
 	_ "github.com/mattn/go-sqlite3"    // SQLite driver
 )
 
+// MigrationRecord represents a migration record
+type MigrationRecord struct {
+	ID          int       `json:"id"`
+	Version     string    `json:"version"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	AppliedAt   time.Time `json:"applied_at"`
+	Success     bool      `json:"success"`
+}
+
 // Config holds database configuration
 type Config struct {
 	Host                  string
@@ -29,6 +39,12 @@ type Config struct {
 	MaxOpenConnections    int
 	MaxIdleConnections    int
 	ConnectionMaxLifetime string
+}
+
+// DatabaseConnection holds both Ent client and raw DB connection
+type DatabaseConnection struct {
+	Client *ent.Client
+	DB     *sql.DB
 }
 
 // NewConnection creates a new Ent client connection
@@ -90,11 +106,22 @@ func NewConnection(config *Config) (*ent.Client, error) {
 
 // AutoMigrate runs database migrations
 func AutoMigrate(ctx context.Context, client *ent.Client) error {
-	if err := client.Schema.Create(ctx); err != nil {
+	log.Println("Starting database migration...")
+	
+	// Log the schema that will be created
+	log.Println("Creating/updating schema for entities: User")
+	
+	// Run the actual migration
+	migrationStart := time.Now()
+	err := client.Schema.Create(ctx)
+	
+	if err != nil {
+		log.Printf("Failed to create database schema: %v", err)
 		return fmt.Errorf("failed to create database schema: %w", err)
 	}
 
-	log.Println("Database migration completed successfully")
+	log.Printf("✅ Database migration completed successfully in %v", time.Since(migrationStart))
+	log.Println("   - Table: users (with indexes: email, status, created_at)")
 	return nil
 }
 
@@ -107,9 +134,11 @@ func SeedData(ctx context.Context, client *ent.Client) error {
 	}
 
 	if count > 0 {
-		log.Println("Database already has data, skipping seed")
+		log.Printf("Database already has %d users, skipping seed", count)
 		return nil
 	}
+
+	log.Println("Seeding initial data...")
 
 	// Seed initial users
 	users := []struct {
@@ -138,7 +167,7 @@ func SeedData(ctx context.Context, client *ent.Client) error {
 		},
 	}
 
-	for _, userData := range users {
+	for i, userData := range users {
 		_, err := client.User.Create().
 			SetName(userData.name).
 			SetEmail(userData.email).
@@ -148,9 +177,10 @@ func SeedData(ctx context.Context, client *ent.Client) error {
 		if err != nil {
 			return fmt.Errorf("failed to seed user data: %w", err)
 		}
+		log.Printf("   ✓ Created user %d: %s (%s)", i+1, userData.name, userData.email)
 	}
 
-	log.Println("Database seeded successfully")
+	log.Printf("✅ Database seeded successfully with %d users", len(users))
 	return nil
 }
 

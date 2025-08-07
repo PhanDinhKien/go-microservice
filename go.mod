@@ -8,7 +8,7 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/gin-gonic/gin v1.9.1
 	github.com/jackc/pgx/v5 v5.6.0
-	github.com/joho/godotenv v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.5.3

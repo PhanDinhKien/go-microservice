@@ -1,0 +1,31 @@
+# Migration Commands for User Service
+
+.PHONY: migrate seed status reset help
+
+# Run database migrations
+migrate:
+	@echo "🔄 Running database migrations..."
+	@go run cmd/migrate/main.go migrate
+
+# Seed initial data
+seed:
+	@echo "🌱 Seeding initial data..."
+	@go run cmd/migrate/main.go seed
+
+# Show database status
+status:
+	@echo "📊 Checking database status..."
+	@go run cmd/migrate/main.go status
+
+# Show available commands
+help:
+	@echo "Available migration commands:"
+	@echo "  make migrate  - Run database migrations"
+	@echo "  make seed     - Seed initial data"
+	@echo "  make status   - Show database status"
+	@echo ""
+	@echo "Note: These commands use .env.migrate for localhost connection"
+	@echo "      Make sure PostgreSQL is running on localhost:5432"
+
+# Default target
+.DEFAULT_GOAL := help

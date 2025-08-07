@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,8 @@ COPY shared/ ./shared/
 COPY services/api-gateway/ ./services/api-gateway/
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o api-gateway ./services/api-gateway
+WORKDIR /app/services/api-gateway
+RUN CGO_ENABLED=0 GOOS=linux go build -o api-gateway .
 
 # Final stage
 FROM alpine:latest
@@ -23,7 +24,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # Copy the binary from builder stage
-COPY --from=builder /app/api-gateway .
+COPY --from=builder /app/services/api-gateway/api-gateway .
 
 # Expose port
 EXPOSE 8080
